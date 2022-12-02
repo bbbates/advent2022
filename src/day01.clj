@@ -1,5 +1,5 @@
 (ns day01
-  (:import [java.io BufferedReader StringReader])
+  (:require [common])
   (:gen-class))
 
 
@@ -33,9 +33,7 @@
 
 (comment
   (def sample
-    (line-seq
-      (BufferedReader.
-        (StringReader. "1000\n2000\n3000\n\n4000\n\n5000\n6000\n\n7000\n8000\n9000\n\n10000"))))
+    (common/sample->lines "1000\n2000\n3000\n\n4000\n\n5000\n6000\n\n7000\n8000\n9000\n\n10000"))
 
   (part1 sample)
   (part2 sample))
@@ -43,9 +41,4 @@
 
 (defn -main
   [& args]
-  (with-open [rdr (clojure.java.io/reader *in*)]
-    (let [lines (line-seq rdr)]
-      (print
-        (if (= (first args) "1")
-          (part1 lines)
-          (part2 lines))))))
+  (common/puzzle part1 part2 args))
