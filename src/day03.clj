@@ -25,14 +25,23 @@
     (map (comp item-priorities common-item rucksack-compartments))
     (reduce +)))
 
-(defn part2 [])
+(defn- possible-badge
+  [[elf1 elf2 elf3]]
+  (first (set/intersection (set elf1) (set elf2) (set elf3))))
+
+(defn part2 [lines]
+  (->>
+    lines
+    (partition 3)
+    (map (comp item-priorities possible-badge))
+    (reduce +)))
 
 
 (comment
   (def sample (common/sample->lines "vJrwpWtwJgWrhcsFMMfFFhFp\njqHRNqRjqzjGDLGLrsFMfFZSrLrFZsSL\nPmmdzqPrVvPwwTWBwg\nwMqvLMZHhHMvwLHjbvcjnnSBnvTQFn\nttgJtRGJQctTZtZT\nCrZsJsPPZsGzwwsLwLmpwMDw"))
 
   (assert (= (part1 sample) 157))
-  )
+  (assert (= (part2 sample) 70)))
 
 
 (defn -main
