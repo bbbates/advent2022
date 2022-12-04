@@ -4,4 +4,5 @@
  :aliases
  {:day01 {:main-opts ["-m" "day01"]}
   :day02 {:main-opts ["-m" "day02"]}
-  :day03 {:main-opts ["-m" "day03"]}}}
+  :day03 {:main-opts ["-m" "day03"]}
+  :day04 {:main-opts ["-m" "day04"]}}}
