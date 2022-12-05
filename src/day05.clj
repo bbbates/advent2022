@@ -35,33 +35,36 @@
 
 
 (defn- move
-  [stacks {:keys [num from to]}]
+  [move-order-fn stacks {:keys [num from to]}]
   (let [from-stack (stacks (dec from))
         to-stack (stacks (dec to))
         [moving-crates rem-from-stack] (split-at num from-stack)
-        rem-to-stack (vec (concat (reverse moving-crates) to-stack))]
+        rem-to-stack (vec (concat (move-order-fn moving-crates) to-stack))]
     (assoc stacks (dec from) rem-from-stack (dec to) rem-to-stack)))
 
-(defn do-moves [stacks moves]
-  (reduce move stacks moves))
+(defn do-moves [stacks moves move-order-fn]
+  (reduce (partial move move-order-fn) stacks moves))
 
 ;(apply do-moves (parse-input sample))
 
 (defn part1
   [lines]
   (let [[stacks moves] (parse-input lines)
-        final-stacks (do-moves stacks moves)]
+        final-stacks (do-moves stacks moves reverse)]
     (apply str (map first final-stacks))))
 
 (defn part2
   [lines]
-
-  )
+  (let [[stacks moves] (parse-input lines)
+        final-stacks (do-moves stacks moves identity)]
+    (apply str (map first final-stacks))))
 
 (def sample
   (common/sample->lines "    [D]    \n[N] [C]    \n[Z] [M] [P]\n 1   2   3 \n\nmove 1 from 2 to 1\nmove 3 from 1 to 3\nmove 2 from 2 to 1\nmove 1 from 1 to 2"))
 
 (assert (= "CMZ" (part1 sample)))
+(assert (= "MCD" (part2 sample)))
+
 
 (defn -main
   [& args]
