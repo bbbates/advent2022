@@ -41,4 +41,3 @@
 (defn -main
   [& args]
   (common/puzzle part1 part2 args))
-
