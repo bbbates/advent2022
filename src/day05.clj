@@ -24,14 +24,16 @@
             stack-levels)))
 
 (defn parse-moves [moves]
-  moves
-  )
+  (map (fn [move]
+         (let [[_ num from to] (re-find #"move (\d+) from (\d+) to (\d+)" move)]
+           {:num (parse-long num) :from (parse-long from) :to (parse-long to)}))
+       moves))
 
 (defn- parse-input [lines]
   (let [[stacks _ moves] (partition-by #(empty? %) lines)]
     [(parse-stacks stacks) (parse-moves moves)]))
 
-(parse-input sample)
+;(parse-input sample)
 
 (defn part1
   [lines]
