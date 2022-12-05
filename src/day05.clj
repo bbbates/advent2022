@@ -16,12 +16,12 @@
                               (mapv crate)))
                           (butlast stacks))
         total-stacks (count (first stack-levels))]
-    (reduce (fn [stacks level]
-              (map-indexed (fn [i s]
-                             (if (level i) (conj s (level i)) s))
-                           stacks))
-            (repeatedly total-stacks vector)
-            stack-levels)))
+    (vec (reduce (fn [stacks level]
+                   (map-indexed (fn [i s]
+                                  (if (level i) (conj s (level i)) s))
+                                stacks))
+                 (repeatedly total-stacks vector)
+                 stack-levels))))
 
 (defn parse-moves [moves]
   (map (fn [move]
@@ -33,14 +33,25 @@
   (let [[stacks _ moves] (partition-by #(empty? %) lines)]
     [(parse-stacks stacks) (parse-moves moves)]))
 
-;(parse-input sample)
+
+(defn- move
+  [stacks {:keys [num from to]}]
+  (let [from-stack (stacks (dec from))
+        to-stack (stacks (dec to))
+        [moving-crates rem-from-stack] (split-at num from-stack)
+        rem-to-stack (vec (concat (reverse moving-crates) to-stack))]
+    (assoc stacks (dec from) rem-from-stack (dec to) rem-to-stack)))
+
+(defn do-moves [stacks moves]
+  (reduce move stacks moves))
+
+;(apply do-moves (parse-input sample))
 
 (defn part1
   [lines]
-  (let [[stack-configuration moves] (parse-input lines)]
-
-    )
-  )
+  (let [[stacks moves] (parse-input lines)
+        final-stacks (do-moves stacks moves)]
+    (apply str (map first final-stacks))))
 
 (defn part2
   [lines]
