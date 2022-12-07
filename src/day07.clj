@@ -43,12 +43,10 @@
 
                      acc)) {:curr-path [] :tree {}} parsed-lines)))
 
-;(dir-tree (map parse-line sample))
-
 (defn sum-dir-sizes [max-size tree]
   (let [acc (atom 0)]
     (clojure.walk/postwalk (fn [node]
-                             (when (and (map? node) (< (::size node Integer/MAX_VALUE) max-size))
+                             (when (and (map? node) (<= (::size node Integer/MAX_VALUE) max-size))
                                (swap! acc + (::size node)))
                              node)
                            tree)
@@ -61,13 +59,29 @@
     (dir-tree)
     (sum-dir-sizes 100000)))
 
+
+(defn dirs-to-delete [min-size tree]
+  (let [acc (atom [])]
+    (clojure.walk/postwalk (fn [node]
+                             (when (and (map? node) (>= (::size node Integer/MIN_VALUE) min-size))
+                               (swap! acc conj (::size node)))
+                             node)
+                           tree)
+    @acc))
+
 (defn part2
   [lines]
-  )
+  (let [tree (dir-tree (map parse-line lines))
+        unused-space (- 70000000 (get-in tree ["/" ::size]))
+        min-required-space (- 30000000 unused-space)
+        dir-sizes (dirs-to-delete min-required-space tree)]
+    (reduce min dir-sizes)))
+
 
 (def sample (common/sample->lines "$ cd /\n$ ls\ndir a\n14848514 b.txt\n8504156 c.dat\ndir d\n$ cd a\n$ ls\ndir e\n29116 f\n2557 g\n62596 h.lst\n$ cd e\n$ ls\n584 i\n$ cd ..\n$ cd ..\n$ cd d\n$ ls\n4060174 j\n8033020 d.log\n5626152 d.ext\n7214296 k"))
 
 (assert (= 95437 (part1 sample)))
+(assert (= 24933642 (part2 sample)))
 
 (defn -main
   [& args]
