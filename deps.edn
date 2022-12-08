@@ -9,5 +9,6 @@
   :day05 {:main-opts ["-m" "day05"]}
   :day06 {:main-opts ["-m" "day06"]}
   :day07 {:main-opts ["-m" "day07"]}
+  :day08 {:main-opts ["-m" "day08"]}
 
   }}
