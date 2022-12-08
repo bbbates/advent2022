@@ -30,7 +30,6 @@
 
 (defn- trees-visible-in-row
   [height-map row idx]
-  ;(println (map-indexed #(tree-visible? height-map row [idx %1] %2) row))
   (count (filter identity (map-indexed #(tree-visible? height-map row [idx %1] %2) row))))
 
 (defn- trees-visible
@@ -46,14 +45,61 @@
   (let [height-map (mapv parse-row lines)]
     (trees-visible height-map)))
 
+
+(defn- trees-view-distances
+  [height-map row [row-idx col-idx] tree-height]
+  [
+   ; looking left
+   (if (zero? col-idx)
+     0
+     (let [to-the-left (reverse (subvec row 0 col-idx))
+           left-score (take-while #(> tree-height %) to-the-left)]
+       (if (= (count to-the-left) (count left-score))
+         (count to-the-left)
+         (inc (count left-score)))))
+
+   ; ooking right
+   (if (= (inc col-idx) (count row))
+     0
+     (let [to-the-right (subvec row (inc col-idx) (count row))
+           right-score (take-while #(> tree-height %) to-the-right)]
+       (if (= (count to-the-right) (count right-score))
+         (count to-the-right)
+         (inc (count right-score)))))
+
+   ; looking up
+   (if (zero? row-idx)
+     0
+     (let [up (map #(% col-idx) (reverse (subvec height-map 0 row-idx)))
+           up-score (take-while #(> tree-height %) up)]
+       (if (= (count up) (count up-score))
+         (count up)
+         (inc (count up-score)))))
+
+   ; looking down
+   (if (= (inc row-idx) (count row))
+     0
+     (let [down (map #(% col-idx) (subvec height-map (inc row-idx) (count height-map)))
+           down-score (take-while #(> tree-height %) down)]
+       (if (= (count down) (count down-score))
+         (count down)
+         (inc (count down-score)))))])
+
+
+(defn scenic-scores [height-map]
+   (map-indexed (fn [idx row] (map-indexed #(trees-view-distances height-map row [idx %1] %2) row))
+                         height-map))
+
 (defn part2
   [lines]
-  )
-
+  (let [height-map (mapv parse-row lines)]
+    (reduce max (map (partial apply *)
+                     (apply concat (scenic-scores height-map))))))
 
 (def sample (common/sample->lines "30373\n25512\n65332\n33549\n35390\n"))
 
 (assert (= 21 (part1 sample)))
+(assert (= 8 (part2 sample)))
 
 (defn -main
   [& args]
