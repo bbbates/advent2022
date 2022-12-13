@@ -11,5 +11,6 @@
   :day07 {:main-opts ["-m" "day07"]}
   :day08 {:main-opts ["-m" "day08"]}
   :day09 {:main-opts ["-m" "day09"]}
+  :day10 {:main-opts ["-m" "day10"]}
 
   }}
